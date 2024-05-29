@@ -1,9 +1,9 @@
 import { Router } from "express";
 
 const router = Router()
-
 const cart = []
 
+// Tas bort när db är fixas  /*
 const menu = [
     {
         "id": 1,
@@ -42,26 +42,25 @@ const menu = [
         "price": 39
     }
 ]
+// */
 
-router.post('/:id', (req, res) => {
+router.post('/:id', (req, res, next) => {
     const id = parseInt(req.params.id)
-
     const foundItem = menu.find(item => item.id === id)
 
     if (!foundItem) {
         const error = {
-            status: 200,
+            status: 400,
             message: 'Kan inte lägga in produkten i varukorg'
         }
         return next(error)
     }
-
     cart.push(foundItem)
-
     res.status(200).send({
-        message: 'Produkt tillagd i varukorgen',
+        success: true,
         status: 200,
-        data: cart
+        message: 'Produkt tillagd i varukorgen',
+        data: { cart }
     })
 })
 
