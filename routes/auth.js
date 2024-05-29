@@ -2,7 +2,6 @@ import { Router } from "express";
 import userSchema from "../models/userSchema.js";
 import nedb from "nedb-promises";
 
-
 const database = new nedb({ filename: "./data/users.db", autoload: true });
 
 const router = Router();
@@ -43,6 +42,8 @@ router.post("/register", async (req, res, next) => {
     }
 
     await database.insert(newUser);
+
+    global.currentUser = newUser;
 
     const success = {
         success: true,
