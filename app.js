@@ -1,4 +1,5 @@
 import express from "express";
+import errorHandler from "./middleware/errorHandler.js";
 
 import cartRoute from './routes/cart.js'
 
@@ -12,3 +13,4 @@ app.use('/cart', cartRoute)
 
 
 app.listen(port, () => console.log(`Server running on ${port}`));
+app.use(errorHandler);
