@@ -23,7 +23,6 @@ router.post("/register", async (req, res, next) => {
     const user = await database.findOne({ username: username });
     const userMail = await database.findOne({ email: email });
 
-    console.log(user)
     if (user) {
         return next({
             message: `Användarnamn upptaget. Prova ${username}1`, status: 409
