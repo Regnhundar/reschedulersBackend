@@ -11,10 +11,11 @@ const port = 1337;
 
 //Middleware
 app.use(express.json());
-app.use('/auth', authenticationRoute);
+
 // Routes 
 app.use('/menu', menuRouter);
 app.use('/cart', cartRoute)
+app.use('/auth', authenticationRoute);
 
 app.listen(port, () => console.log(`Server running on ${port}`));
 app.use(errorHandler);
