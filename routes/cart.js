@@ -44,6 +44,28 @@ const menu = [
 ]
 // */
 
+router.get('/', (req, res, next) => {
+    if (!cart.length > 0) {
+        const error = {
+            status: 404,
+            message: 'Varukorgen är tom'
+        }
+        return next(error)
+    }
+
+    let totalPrice = 0
+    cart.map(item => totalPrice += item.price)
+
+    res.status(200).send({
+        success: true,
+        status: 200,
+        data: {
+            cart,
+            total: totalPrice
+        }
+    })
+})
+
 router.post('/:id', (req, res, next) => {
     const id = parseInt(req.params.id)
     const foundItem = menu.find(item => item.id === id)
