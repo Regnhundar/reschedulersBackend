@@ -2,7 +2,7 @@ import { Router } from "express";
 import userSchema from "../models/userSchema.js";
 import nedb from "nedb-promises";
 
-const database = new nedb({ filename: "./data/users.db", autoload: true });
+export const database = new nedb({ filename: "./data/users.db", autoload: true });
 
 const router = Router();
 
@@ -42,8 +42,6 @@ router.post("/register", async (req, res, next) => {
     }
 
     await database.insert(newUser);
-
-
     global.currentUser = newUser;
 
     const success = {
@@ -55,14 +53,46 @@ router.post("/register", async (req, res, next) => {
     return res.status(201).json(success);
 });
 
+//Se leveranstid på beställning - kollar först om användare är inloggad
+router.get("/order", (req, res) => {
+    if (!global.currentUser) {
+        return res.status(401).json({ message: 'Ingen användare är inloggad' })
+    }
+
+    //Kollar om currentUser har någon aktiv order
+    const undeliveredOrder = global.currentUser.orders.find(order => !order.isdelivered);
+    if (!undeliveredOrder) {
+        return res.status(404).json({ message: 'Ingen aktiv beställning hittades' })
+    }
+
+    //Beräknar tid för leverans
+    const currentTime = new Date().getTime();
+    const approxDeliveryTime = undeliveredOrder.approxTime;
+    const timeRemaining = approxDeliveryTime - currentTime;
+
+    if (timeRemaining > 0) {
+        const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        return res.status(200).json({
+            message: `Ordern är på väg. Beräknad leverans om ${hours} timmar och ${minutes} minuter.`,
+            order: undeliveredOrder
+        });
+    } else {
+        return res.status(200).json({
+            message: 'Ordern har levererats.',
+            order: undeliveredOrder
+        });
+    }
+});
+
 router.post("/login", async (req, res, next) => {
     const { username, password } = req.body;
 
     const authUser = await database.findOne({ username: username, password: password });
 
     if (authUser) {
-
         global.currentUser = authUser;
+        console.log(global.currentUser);
         res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
     } else {
         const error = new Error("Antingen användarnamn eller lösenord är fel")
@@ -75,6 +105,26 @@ router.post("/login", async (req, res, next) => {
 router.post("/logout", (req, res) => {
     global.currentUser = null;
     res.status(200).json({ message: 'Lyckad utloggning' });
+});
+
+//getUserOrders
+router.post("/user/orders", async (req, res, next) => {
+    let user = global.currentUser;
+    const orders = user.orders;
+    let totalSum = 0;
+
+    orders.forEach(order => totalSum += order.totalsum);
+
+    if (!user) {
+        return next({ message: "Du måste logga in för att se din historik", status: 401 });
+    }
+
+    res.status(200).send({
+        success: true,
+        status: 200,
+        orders: orders,
+        totalsumman: totalSum,
+    });
 })
 
 export default router;

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { database as menu } from "./menu.js"
 
 const router = Router()
-const cart = []
+export let cart = []
 
 
 router.get('/', (req, res, next) => {
@@ -16,6 +16,11 @@ router.get('/', (req, res, next) => {
 
     let totalPrice = 0
     let shipping = 50;
+
+    // Promotion 3 för 2
+    if (cart.length > 2) {
+        cart.splice(2, 1, { ...cart[2], price: 0 })
+    }
 
     cart.map(item => totalPrice += item.price);
 
@@ -48,14 +53,7 @@ router.post('/:id', async (req, res, next) => {
         return next(error)
     }
 
-    // Promotion 3 för 2
-    if (cart.length === 2) {
-        const freebie = { ...foundItem, price: 0 }
-        cart.push(freebie);
-    } else {
-        cart.push(foundItem);
-    }
-
+    cart.push(foundItem);
 
     res.status(200).send({
         success: true,
