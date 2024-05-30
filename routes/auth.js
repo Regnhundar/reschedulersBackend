@@ -2,7 +2,7 @@ import { Router } from "express";
 import userSchema from "../models/userSchema.js";
 import nedb from "nedb-promises";
 
-const database = new nedb({ filename: "./data/users.db", autoload: true });
+export const database = new nedb({ filename: "./data/users.db", autoload: true });
 
 const router = Router();
 
