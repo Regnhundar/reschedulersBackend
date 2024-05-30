@@ -61,8 +61,9 @@ router.post("/login", async (req, res, next) => {
     const authUser = await database.findOne({ username: username, password: password });
 
     if (authUser) {
-        global.currentUSer = authUser;
-        res.status(200).json({ message: `Welcome back ${username}!` })
+
+        global.currentUser = authUser;
+        res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
     } else {
         const error = new Error("Antingen användarnamn eller lösenord är fel")
         error.status = 400
