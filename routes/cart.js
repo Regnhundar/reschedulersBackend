@@ -5,7 +5,7 @@ const router = Router()
 export let cart = []
 
 
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
     if (!cart.length > 0) {
         const error = {
             status: 404,
@@ -18,11 +18,18 @@ router.get('/', (req, res, next) => {
     let shipping = 50;
 
     // Promotion 3 för 2
+
     if (cart.length > 2) {
-        cart.splice(2, 1, { ...cart[2], price: 0 })
+        cart.splice(2, 1, { ...cart[2], price: 0 });
+    } else {
+        let freebie = cart.findIndex(item => item.price === 0);
+        if (freebie !== -1) {
+            const originalPrice = await menu.findOne({ title: cart[freebie].title })
+            cart[freebie].price = originalPrice.price;
+        }
     }
 
-    cart.map(item => totalPrice += item.price);
+    cart.forEach(item => totalPrice += item.price);
 
     // Promotion inloggade får gratis frakt.
     if (global.currentUser) {
@@ -43,7 +50,7 @@ router.get('/', (req, res, next) => {
 // addToCart
 router.post('/:id', async (req, res, next) => {
     const id = parseInt(req.params.id)
-    const foundItem = await menu.findOne(item => item.id === id)
+    const foundItem = await menu.findOne({ id: id })
 
     if (!foundItem) {
         const error = {

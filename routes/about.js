@@ -18,7 +18,7 @@ const db = new nedb({ filename: './data/about.db', autoload: true });
 //     });
 
 // GET about
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         //Hämtar dokument i databasen
         const docs = await db.find({});
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
         res.json(docs);
         //Om något går fel catchas detta och skickar error
     } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
+        next(error);
     }
 });
 

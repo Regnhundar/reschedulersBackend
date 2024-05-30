@@ -53,7 +53,6 @@ router.post('/', async (req, res, next) => {
         order,
         totalsum,
         approxTime,
-        isDelivered: false,
     };
 
     await database.insert(newOrder);
@@ -65,7 +64,8 @@ router.post('/', async (req, res, next) => {
     })
 
     if (user !== "guest") {
-        userdb.orders.push(createdOrder)
+        global.currentUser.orders.unshift(createdOrder)
+        userdb.orders.unshift(createdOrder)
         usersdb.update({ _id: userdb._id }, { $set: { orders: userdb.orders } })
     }
 
