@@ -70,4 +70,10 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
+//Logout
+router.post("/logout", (req, res) => {
+    global.currentUser = null;
+    res.status(200).json({ message: 'Lyckad utloggning' });
+})
+
 export default router;
