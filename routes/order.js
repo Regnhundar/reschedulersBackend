@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import nedb from 'nedb-promises';
-import orderSchema from '../models/orderSchema.js';
 
 const router = Router();
 
@@ -10,42 +9,56 @@ const database = new nedb({
 });
 
 router.post('/', async (req, res, next) => {
-    const { error } = orderSchema.validate(req.body);
+    try {
+        const response = await fetch('http://localhost:1337/cart/');
 
-    if (error) {
-        const response = {
-            success: false,
-            message: error.details[0].message,
-            status: 400
+        if (response.status > 400) {
+            throw {
+                message: 'Något gick fel vid hämtning',
+                status: response.status
+            };
+        }
+
+        const cart = await response.json();
+
+        // används inte eftersom vi skickar status 404 om varukorg är tom /*
+        if (!cart.success) {
+            const error = {
+                status: 400,
+                message: 'Varukorgen är tom kan inte skapa en order'
+            }
+            return next(error)
+        }
+        // */
+
+        const user = 'guest'
+        const order = [];
+        let totalsum = 0;
+
+        cart.data.cart.map(item => {
+            order.push(item);
+            totalsum += item.price;
+        })
+
+        const newOrder = {
+            user,
+            order,
+            totalsum,
+            approxTime: 1533,
+            isDelivered: false,
         };
-        return next(response);
+
+        await database.insert(newOrder);
+
+        res.status(200).send({
+            success: true,
+            status: 200,
+            message: 'Ny order skapad',
+            newOrder
+        })
+    } catch (error) {
+        return next(error);
     }
-
-    const { cart } = req.body;
-    const order = [];
-    let totalsum = 0;
-
-    cart.map(item => {
-        order.push(item);
-        totalsum += item.price;
-    })
-
-    const newOrder = {
-        user: 'guest',
-        order,
-        totalsum: totalsum,
-        approxTime: 1533,
-        isDelivered: false,
-    };
-
-    await database.insert(newOrder);
-
-    res.status(200).send({
-        success: true,
-        status: 200,
-        message: 'Ny order skapad',
-        newOrder
-    })
 });
 
 export default router;
