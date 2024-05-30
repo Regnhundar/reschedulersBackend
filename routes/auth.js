@@ -54,7 +54,7 @@ router.post("/register", async (req, res, next) => {
     return res.status(201).json(success);
 });
 
-//Se leveranstid på beställning
+//Se leveranstid på beställning - kollar först om användare är inloggad
 router.get("/order", (req, res) => {
     if (!global.currentUser) {
         return res.status(401).json({ message: 'Ingen användare är inloggad' })
@@ -66,6 +66,24 @@ router.get("/order", (req, res) => {
         return res.status(404).json({ message: 'Ingen aktiv beställning hittades' })
     }
 
+    //Beräknar tid för leverans
+    const currentTime = new Date().getTime();
+    const approxDeliveryTime = undeliveredOrder.approxTime;
+    const timeRemaining = approxDeliveryTime - currentTime;
+
+    if (timeRemaining > 0) {
+        const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        return res.status(200).json({
+            message: `Ordern är på väg. Beräknad leverans om ${hours} timmar och ${minutes} minuter.`,
+            order: undeliveredOrder
+        });
+    } else {
+        return res.status(200).json({
+            message: 'Ordern har levererats.',
+            order: undeliveredOrder
+        });
+    }
 })
 
 //Logout
