@@ -2,7 +2,7 @@ import { Router } from "express";
 import userSchema from "../models/userSchema.js";
 import nedb from "nedb-promises";
 
-const database = new nedb({ filename: "./data/users.db", autoload: true });
+export const database = new nedb({ filename: "./data/users.db", autoload: true });
 
 const router = Router();
 
@@ -42,7 +42,6 @@ router.post("/register", async (req, res, next) => {
     }
 
     await database.insert(newUser);
-
     global.currentUser = newUser;
 
     const success = {
@@ -84,12 +83,27 @@ router.get("/order", (req, res) => {
             order: undeliveredOrder
         });
     }
-})
+});
+
+router.post("/login", async (req, res, next) => {
+    const { username, password } = req.body;
+
+    const authUser = await database.findOne({ username: username, password: password });
+
+    if (authUser) {
+        global.currentUser = authUser;
+        res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
+    } else {
+        const error = new Error("Antingen användarnamn eller lösenord är fel")
+        error.status = 400
+        next(error);
+    }
+});
 
 //Logout
 router.post("/logout", (req, res) => {
     global.currentUser = null;
     res.status(200).json({ message: 'Lyckad utloggning' });
-})
+});
 
 export default router;

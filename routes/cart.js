@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 const router = Router()
-const cart = []
+export const cart = []
 
 // Tas bort när db är fixas  /*
 const menu = [
