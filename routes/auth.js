@@ -54,4 +54,10 @@ router.post("/register", async (req, res, next) => {
     return res.status(201).json(success);
 });
 
+//Logout
+router.post("/logout", (req, res) => {
+    global.currentUser = null;
+    res.status(200).json({ message: 'Lyckad utloggning' });
+})
+
 export default router;
