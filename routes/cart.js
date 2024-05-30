@@ -19,6 +19,7 @@ router.get('/', (req, res, next) => {
 
     cart.map(item => totalPrice += item.price);
 
+    // Promotion inloggade får gratis frakt.
     if (global.currentUser) {
         shipping = 0
     }
@@ -47,7 +48,14 @@ router.post('/:id', async (req, res, next) => {
         return next(error)
     }
 
-    cart.push(foundItem)
+    // Promotion 3 för 2
+    if (cart.length === 2) {
+        const freebie = { ...foundItem, price: 0 }
+        cart.push(freebie);
+    } else {
+        cart.push(foundItem);
+    }
+
 
     res.status(200).send({
         success: true,
