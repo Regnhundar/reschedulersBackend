@@ -6,7 +6,7 @@ const router = Router();
 // Skapa en databas för about 
 const db = new nedb({ filename: './data/about.db', autoload: true });
 
-// Example: Insert text om databasen är tom
+// Insert text om databasen är tom:
 // db.count({})
 //     .then(count => {
 //         if (count === 0) {
@@ -16,7 +16,6 @@ const db = new nedb({ filename: './data/about.db', autoload: true });
 //     .catch(err => {
 //         console.error('Error initializing database:', err);
 //     });
-
 // GET about
 router.get('/', async (req, res) => {
     try {
@@ -24,8 +23,8 @@ router.get('/', async (req, res) => {
         const docs = await db.find({});
         // Om hämtningen lyckas, returnera dokumenten som JSON-svar.
         res.json(docs);
+        //Om något går fel catchas detta och skickar error
     } catch (error) {
-        //Om något går fel catchas detta ocg skickar error
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
