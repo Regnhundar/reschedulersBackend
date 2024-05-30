@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import nedb from 'nedb-promises';
+import { cart } from './cart.js';
+import { database as usersdb } from './auth.js';
 
 const router = Router();
 
@@ -9,56 +11,70 @@ const database = new nedb({
 });
 
 router.post('/', async (req, res, next) => {
-    try {
-        const response = await fetch('http://localhost:1337/cart/');
 
-        if (response.status > 400) {
-            throw {
-                message: 'Något gick fel vid hämtning',
-                status: response.status
-            };
+    if (!cart.length > 0) {
+        const error = {
+            status: 400,
+            message: 'Varukorgen är tom kan inte skapa en order'
         }
-
-        const cart = await response.json();
-
-        // används inte eftersom vi skickar status 404 om varukorg är tom /*
-        if (!cart.success) {
-            const error = {
-                status: 400,
-                message: 'Varukorgen är tom kan inte skapa en order'
-            }
-            return next(error)
-        }
-        // */
-
-        const user = 'guest'
-        const order = [];
-        let totalsum = 0;
-
-        cart.data.cart.map(item => {
-            order.push(item);
-            totalsum += item.price;
-        })
-
-        const newOrder = {
-            user,
-            order,
-            totalsum,
-            approxTime: 1533,
-            isDelivered: false,
-        };
-
-        await database.insert(newOrder);
-
-        res.status(200).send({
-            success: true,
-            status: 200,
-            message: 'Ny order skapad',
-            newOrder
-        })
-    } catch (error) {
-        return next(error);
+        return next(error)
     }
+
+    let user = 'guest'
+    let userdb = {}
+    if (global.currentUser) {
+        user = global.currentUser.username
+        userdb = await usersdb.findOne({ username: global.currentUser.username });
+    }
+
+    const order = [];
+    let totalsum = 0;
+
+    cart.map(item => {
+        order.push(item);
+        totalsum += item.price;
+    })
+
+    let hour = new Date().getHours();
+    let minutes = new Date().getMinutes();
+
+    minutes += Math.floor(Math.random() * (20 - 10 + 1) + 10)
+    if (minutes >= 60) {
+        minutes -= 60
+        hour += 1
+    }
+    if (hour > 24) {
+        hour -= 24
+    }
+    let approxTime = `${hour}${minutes}`
+
+    const newOrder = {
+        user,
+        order,
+        totalsum,
+        approxTime,
+        isDelivered: false,
+    };
+
+    await database.insert(newOrder);
+    const createdOrder = await database.findOne({
+        user,
+        order,
+        totalsum,
+        approxTime
+    })
+
+    if (user !== "guest") {
+        userdb.orders.push(createdOrder)
+        usersdb.update({ _id: userdb._id }, { $set: { orders: userdb.orders } })
+    }
+
+    res.status(200).send({
+        success: true,
+        status: 200,
+        message: 'Ny order skapad',
+        createdOrder
+    })
 });
 
 export default router;
