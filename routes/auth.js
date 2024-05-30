@@ -54,6 +54,20 @@ router.post("/register", async (req, res, next) => {
     return res.status(201).json(success);
 });
 
+//Se leveranstid på beställning
+router.get("/order", (req, res) => {
+    if (!global.currentUser) {
+        return res.status(401).json({ message: 'Ingen användare är inloggad' })
+    }
+
+    //Kollar om currentUser har någon aktiv order
+    const undeliveredOrder = global.currentUser.orders.find(order => !order.isdelivered);
+    if (!undeliveredOrder) {
+        return res.status(404).json({ message: 'Ingen aktiv beställning hittades' })
+    }
+
+})
+
 //Logout
 router.post("/logout", (req, res) => {
     global.currentUser = null;
