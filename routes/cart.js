@@ -86,4 +86,25 @@ router.post('/:id', (req, res, next) => {
     })
 })
 
+router.delete('/:id', (req, res, next) => {
+    const id = parseInt(req.params.id)
+    const foundItem = cart.find(item => item.id === id)
+    //Om produkten inte finns i varukorgen skickas ett felmeddelande
+    if (!foundItem) {
+        const error = {
+            status: 404,
+            message: 'Produkten finns inte i varukorgen'
+        }
+        return next(error)
+    }
+    //Om produkten finns i varukorgen letar vi upp dess index och tar bort den
+    cart.splice(cart.indexOf(foundItem), 1)
+    res.status(200).send({
+        success: true,
+        status: 200,
+        message: 'Produkt borttagen från varukorgen',
+        data: { cart }
+    })
+})
+
 export default router
