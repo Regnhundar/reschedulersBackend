@@ -1,4 +1,5 @@
 import express from "express";
+import aboutRouter from './routes/about.js';
 
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -16,6 +17,8 @@ app.use(express.json());
 app.use('/menu', menuRouter);
 app.use('/cart', cartRoute)
 app.use('/auth', authenticationRoute);
+app.use('/about', aboutRouter);
+
 
 app.listen(port, () => console.log(`Server running on ${port}`));
 app.use(errorHandler);
