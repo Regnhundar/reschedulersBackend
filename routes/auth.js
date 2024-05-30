@@ -68,8 +68,6 @@ router.post("/login", async (req, res, next) => {
         error.status = 400
         next(error);
     }
-
-
 });
 
 export default router;
