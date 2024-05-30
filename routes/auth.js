@@ -77,4 +77,24 @@ router.post("/logout", (req, res) => {
     res.status(200).json({ message: 'Lyckad utloggning' });
 })
 
+//getUserOrders
+router.post("/user/orders", async (req, res, next) => {
+    let user = global.currentUser;
+    const orders = user.orders;
+    let totalSum = 0;
+
+    orders.forEach(order => totalSum += order.totalsum);
+
+    if (!user) {
+        return next({ message: "Du måste logga in för att se din historik", status: 401 });
+    }
+
+    res.status(200).send({ 
+        success: true,
+        status: 200,
+        orders: orders,
+        totalsumman: totalSum,
+    });
+}) 
+
 export default router;
