@@ -1,8 +1,6 @@
 import express from "express";
 import aboutRouter from './routes/about.js';
-
 import errorHandler from "./middleware/errorHandler.js";
-
 import cartRoute from './routes/cart.js'
 import menuRouter from "./routes/menu.js";
 import authenticationRoute from "./routes/auth.js"
