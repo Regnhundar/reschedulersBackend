@@ -43,6 +43,7 @@ router.post("/register", async (req, res, next) => {
 
     await database.insert(newUser);
 
+
     global.currentUser = newUser;
 
     const success = {
@@ -52,6 +53,24 @@ router.post("/register", async (req, res, next) => {
     }
 
     return res.status(201).json(success);
+});
+
+router.post("/login", async (req, res, next) => {
+    const { username, password } = req.body;
+
+    const authUser = await database.findOne({ username: username, password: password });
+
+    if (authUser) {
+        console.log(authUser)
+        global.currentUSer = authUser;
+        res.status(200).json({ message: `Welcome back ${username}!` })
+    } else {
+        const error = new Error("Antingen användarnamn eller lösenord är fel")
+        error.status = 400
+        next(error);
+    }
+
+
 });
 
 export default router;
