@@ -92,6 +92,7 @@ router.post("/login", async (req, res, next) => {
 
     if (authUser) {
         global.currentUser = authUser;
+        console.log(global.currentUser);
         res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
     } else {
         const error = new Error("Antingen användarnamn eller lösenord är fel")
@@ -118,12 +119,12 @@ router.post("/user/orders", async (req, res, next) => {
         return next({ message: "Du måste logga in för att se din historik", status: 401 });
     }
 
-    res.status(200).send({ 
+    res.status(200).send({
         success: true,
         status: 200,
         orders: orders,
         totalsumman: totalSum,
     });
-}) 
+})
 
 export default router;

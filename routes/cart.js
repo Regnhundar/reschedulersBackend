@@ -1,48 +1,9 @@
 import { Router } from "express";
+import { database as menu } from "./menu.js"
 
 const router = Router()
-export const cart = []
+export let cart = []
 
-// Tas bort när db är fixas  /*
-const menu = [
-    {
-        "id": 1,
-        "title": "Bryggkaffe",
-        "desc": "Bryggd på månadens bönor.",
-        "price": 39
-    },
-    {
-        "id": 2,
-        "title": "Caffè Doppio",
-        "desc": "Bryggd på månadens bönor.",
-        "price": 49
-    },
-    {
-        "id": 3,
-        "title": "Cappuccino",
-        "desc": "Bryggd på månadens bönor.",
-        "price": 49
-    },
-    {
-        "id": 4,
-        "title": "Latte Macchiato",
-        "desc": "Bryggd på månadens bönor.",
-        "price": 49
-    },
-    {
-        "id": 5,
-        "title": "Kaffe Latte",
-        "desc": "Bryggd på månadens bönor.",
-        "price": 54
-    },
-    {
-        "id": 6,
-        "title": "Cortado",
-        "desc": "Bryggd på månadens bönor.",
-        "price": 39
-    }
-]
-// */
 
 router.get('/', (req, res, next) => {
     if (!cart.length > 0) {
@@ -54,21 +15,35 @@ router.get('/', (req, res, next) => {
     }
 
     let totalPrice = 0
-    cart.map(item => totalPrice += item.price)
+    let shipping = 50;
+
+    // Promotion 3 för 2
+    if (cart.length > 2) {
+        cart.splice(2, 1, { ...cart[2], price: 0 })
+    }
+
+    cart.map(item => totalPrice += item.price);
+
+    // Promotion inloggade får gratis frakt.
+    if (global.currentUser) {
+        shipping = 0
+    }
 
     res.status(200).send({
         success: true,
         status: 200,
         data: {
             cart,
-            total: totalPrice
+            shipping: shipping,
+            total: totalPrice + shipping
         }
     })
-})
+});
 
-router.post('/:id', (req, res, next) => {
+// addToCart
+router.post('/:id', async (req, res, next) => {
     const id = parseInt(req.params.id)
-    const foundItem = menu.find(item => item.id === id)
+    const foundItem = await menu.findOne(item => item.id === id)
 
     if (!foundItem) {
         const error = {
@@ -77,7 +52,9 @@ router.post('/:id', (req, res, next) => {
         }
         return next(error)
     }
-    cart.push(foundItem)
+
+    cart.push(foundItem);
+
     res.status(200).send({
         success: true,
         status: 200,
