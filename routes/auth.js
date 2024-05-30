@@ -61,7 +61,6 @@ router.post("/login", async (req, res, next) => {
     const authUser = await database.findOne({ username: username, password: password });
 
     if (authUser) {
-        console.log(authUser)
         global.currentUSer = authUser;
         res.status(200).json({ message: `Welcome back ${username}!` })
     } else {
