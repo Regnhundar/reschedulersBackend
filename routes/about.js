@@ -16,6 +16,7 @@ const db = new nedb({ filename: './data/about.db', autoload: true });
 //     .catch(err => {
 //         console.error('Error initializing database:', err);
 //     });
+
 // GET about
 router.get('/', async (req, res) => {
     try {
