@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { database as menu } from "./menu.js"
+import menu from "../controllers/menuController.js"
 
 const router = Router()
 export let cart = []
