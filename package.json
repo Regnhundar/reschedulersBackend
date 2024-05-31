@@ -2,7 +2,8 @@
   "dependencies": {
     "express": "^4.19.2",
     "joi": "^17.13.1",
-    "nedb-promises": "^6.2.3"
+    "nedb-promises": "^6.2.3",
+    "uuid": "^9.0.1"
   },
   "name": "reschedulersbackend",
   "version": "1.0.0",
