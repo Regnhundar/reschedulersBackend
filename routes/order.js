@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
     const order = [];
     let totalsum = 0;
 
-    cart.map(item => {
+    cart.forEach(item => {
         order.push(item);
         totalsum += item.price;
     })

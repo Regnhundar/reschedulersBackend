@@ -97,7 +97,6 @@ router.post("/login", async (req, res, next) => {
 
     if (authUser) {
         global.currentUser = authUser;
-        console.log(global.currentUser);
         res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
     } else {
         const error = new Error("Antingen användarnamn eller lösenord är fel")
@@ -115,14 +114,14 @@ router.post("/logout", (req, res) => {
 //getUserOrders
 router.post("/user/orders", async (req, res, next) => {
     let user = global.currentUser;
-    const orders = user.orders;
     let totalSum = 0;
-
-    orders.forEach(order => totalSum += order.totalsum);
 
     if (!user) {
         return next({ message: "Du måste logga in för att se din historik", status: 401 });
     }
+
+    const orders = user.orders;
+    orders.forEach(order => totalSum += order.totalsum);
 
     res.status(200).send({
         success: true,

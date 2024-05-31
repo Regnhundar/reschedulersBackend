@@ -8,7 +8,7 @@ export let cart = []
 router.get('/', async (req, res, next) => {
     if (!cart.length > 0) {
         const error = {
-            status: 404,
+            status: 200,
             message: 'Varukorgen är tom'
         }
         return next(error)
