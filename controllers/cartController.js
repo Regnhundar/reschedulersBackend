@@ -1,71 +1,74 @@
 import menu from "../controllers/menuController.js";
-
+import { threeForThePrice, shippingCost } from "../utility/promotionFunctions.js";
 let cart = []
 
+
+// @desc GET Hämta hem varukorgen
+// @route /cart
 export const getCart = async (req, res, next) => {
-    if (!cart.length > 0) {
-        const error = {
+    try {
+        if (!cart.length > 0) {
+            const error = {
+                status: 200,
+                message: 'Varukorgen är tom'
+            }
+            return next(error)
+        }
+
+        let totalPrice = 0
+
+        // Promotions:
+        //    handlePromotions(cart, menu)
+        cart = await threeForThePrice(cart, menu)
+
+        cart.forEach(item => totalPrice += item.price);
+
+        res.status(200).send({
+            success: true,
             status: 200,
-            message: 'Varukorgen är tom'
-        }
-        return next(error)
+            data: {
+                cart,
+                shipping: shippingCost(),
+                total: totalPrice + shippingCost()
+            }
+        })
+    } catch (error) {
+        next(error)
     }
 
-    let totalPrice = 0
-    let shipping = 50;
-
-    // Promotion 3 för 2
-    if (cart.length > 2) {
-        cart.splice(2, 1, { ...cart[2], price: 0 });
-    } else {
-        let freebie = cart.findIndex(item => item.price === 0);
-        if (freebie !== -1) {
-            const originalPrice = await menu.findOne({ title: cart[freebie].title })
-            cart[freebie].price = originalPrice.price;
-        }
-    }
-
-    cart.forEach(item => totalPrice += item.price);
-
-    // Promotion inloggade får gratis frakt.
-    if (global.currentUser) {
-        shipping = 0
-    }
-
-    res.status(200).send({
-        success: true,
-        status: 200,
-        data: {
-            cart,
-            shipping: shipping,
-            total: totalPrice + shipping
-        }
-    })
 };
 
-// addToCart
+// @desc POST Lägg till i varukorgen
+// @route /cart
 export const addToCart = async (req, res, next) => {
-    const id = parseInt(req.params.id)
-    const foundItem = await menu.findOne({ id: id })
+    try {
+        const id = parseInt(req.params.id)
+        const foundItem = await menu.findOne({ id: id })
 
-    if (!foundItem) {
-        const error = {
-            status: 400,
-            message: 'Kan inte lägga in produkten i varukorg'
+        if (!foundItem) {
+            const error = {
+                status: 400,
+                message: 'Kan inte lägga in produkten i varukorg'
+            }
+            return next(error)
         }
-        return next(error)
+
+        cart.push(foundItem);
+
+        res.status(200).send({
+            success: true,
+            status: 200,
+            message: 'Produkt tillagd i varukorgen',
+            data: { cart }
+        })
+    } catch (error) {
+        next(error);
     }
 
-    cart.push(foundItem);
-
-    res.status(200).send({
-        success: true,
-        status: 200,
-        message: 'Produkt tillagd i varukorgen',
-        data: { cart }
-    })
 }
 
+// @desc DELETE Ta bort från varukorgen
+// @route /cart/:id
 export const removeFromCart = (req, res, next) => {
     const id = parseInt(req.params.id)
     const foundItem = cart.find(item => item.id === id)

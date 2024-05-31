@@ -1,2 +1,2 @@
-{"promotion":"Fri frakt","information":"Just nu sparar våra registrerade kunder 50kr per köp genom fri frakt!","_id":"7FL3SSeoX7SjMHUc"}
-{"promotion":"Köp 3 betala för 2","information":"Just nu får du en kaffe gratis vid köp av 3 eller fler!","_id":"K5pJRXwFccxajcnf"}
+{"id":"shippingCost","active":true,"promotion":"Fri frakt","information":"Just nu sparar våra registrerade kunder 50kr per köp genom fri frakt!","_id":"7FL3SSeoX7SjMHUc"}
+{"id":"threeForThePrice","active":true,"promotion":"Köp 3 betala för 2","information":"Just nu får du en kaffe gratis vid köp av 3 eller fler!","_id":"K5pJRXwFccxajcnf"}
