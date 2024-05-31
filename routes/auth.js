@@ -60,21 +60,26 @@ router.get("/order", (req, res) => {
     }
 
     //Kollar om currentUser har någon aktiv order
-    const undeliveredOrder = global.currentUser.orders.find(order => !order.isdelivered);
+    const undeliveredOrder = global.currentUser.orders[0]
+    console.log(undeliveredOrder);
     if (!undeliveredOrder) {
         return res.status(404).json({ message: 'Ingen aktiv beställning hittades' })
     }
 
     //Beräknar tid för leverans
-    const currentTime = new Date().getTime();
-    const approxDeliveryTime = undeliveredOrder.approxTime;
-    const timeRemaining = approxDeliveryTime - currentTime;
+    let hour = new Date().getHours();
+    let minutes = new Date().getMinutes();
+    const currentTime = parseInt(`${hour}${minutes}`)
+    const approxDeliveryTime = parseInt(undeliveredOrder.approxTime);
+    console.log('currentTime', currentTime);
+    console.log('approxDeliveryTime', approxDeliveryTime);
+    // const timeRemaining = approxDeliveryTime - currentTime;
+    // console.log('timeRemaining', timeRemaining);
+    currentTime > approxDeliveryTime ? console.log(true) : console.log(false);
 
-    if (timeRemaining > 0) {
-        const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    if (currentTime < approxDeliveryTime) {
         return res.status(200).json({
-            message: `Ordern är på väg. Beräknad leverans om ${hours} timmar och ${minutes} minuter.`,
+            message: `Ordern är på väg. Beräknad leveranstid är ${approxDeliveryTime}.`,
             order: undeliveredOrder
         });
     } else {
@@ -92,7 +97,6 @@ router.post("/login", async (req, res, next) => {
 
     if (authUser) {
         global.currentUser = authUser;
-        console.log(global.currentUser);
         res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
     } else {
         const error = new Error("Antingen användarnamn eller lösenord är fel")
@@ -110,14 +114,14 @@ router.post("/logout", (req, res) => {
 //getUserOrders
 router.post("/user/orders", async (req, res, next) => {
     let user = global.currentUser;
-    const orders = user.orders;
     let totalSum = 0;
-
-    orders.forEach(order => totalSum += order.totalsum);
 
     if (!user) {
         return next({ message: "Du måste logga in för att se din historik", status: 401 });
     }
+
+    const orders = user.orders;
+    orders.forEach(order => totalSum += order.totalsum);
 
     res.status(200).send({
         success: true,
