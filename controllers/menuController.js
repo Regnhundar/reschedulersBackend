@@ -7,12 +7,12 @@ export const database = new nedb({
 
 // @desc Get all promotions
 // @route /promotions
-export const getMenu = async (req, res) => {
+export const getMenu = async (req, res, next) => {
     try {
         const coffee = await database.find({});
         res.json(coffee);
     } catch (error) {
-        res.status(500).json({ message: "Fel vid hämtning av meny" });
+        next(error);
     }
 };
 

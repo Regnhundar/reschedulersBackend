@@ -7,7 +7,6 @@ const db = new nedb({ filename: './data/about.db', autoload: true });
 db.count({})
     .then(count => {
         if (count === 0) {
-            console.log('insert about text in database');
             db.insert({ text: 'Pumpkin spice mug, barista cup, sit macchiato, kopi-luwak, doppio, grounds dripper, crema, strong whipped, variety extra iced id lungo half and half mazagran. Pumpkin spice.' });
         }
     })
