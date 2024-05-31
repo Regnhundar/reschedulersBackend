@@ -6,6 +6,7 @@ import { router as menuRouter } from "./routes/menu.js";
 import authenticationRoute from "./routes/auth.js"
 import promotionsRoute from "./routes/promotions.js"
 import orderRoute from './routes/order.js';
+import notFound from "./middleware/notFound.js";
 
 
 const app = express();
@@ -15,6 +16,7 @@ global.currentUser = null;
 
 //Middleware
 app.use(express.json());
+app.use(notFound);
 
 // Routes 
 app.use('/menu', menuRouter);
