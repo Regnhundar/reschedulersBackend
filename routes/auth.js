@@ -1,7 +1,9 @@
 import { Router } from "express";
 import userSchema from "../models/userSchema.js";
 import nedb from "nedb-promises";
+uuidimport { v4 } from "uuid";
 import joiHandler from "../middleware/joiHandler.js";
+
 
 export const database = new nedb({ filename: "./data/users.db", autoload: true });
 
@@ -25,12 +27,15 @@ router.post("/register", joiHandler(userSchema), async (req, res, next) => {
     }
 
     const newUser = {
+        id: v4().slice(0, 8),
         username: username,
         password: password,
         email: email,
         orders: [],
         totalsum: 0
     }
+
+    console.log(newUser)
 
     await database.insert(newUser);
     global.currentUser = newUser;
