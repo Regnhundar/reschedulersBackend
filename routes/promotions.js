@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { getPromotions } from '../controllers/promotionController.js'
 
-const route = Router();
+const router = Router();
 
-route.get("/", getPromotions);
+router.get("/", getPromotions);
 
-export default route;
+export default router;

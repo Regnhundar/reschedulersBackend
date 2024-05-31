@@ -1,7 +1,7 @@
 import nedb from 'nedb-promises';
+import cart from './cartController.js'
+import usersdb from './authController.js'
 
-import { cart } from '../routes/cart.js'
-import { database as usersdb } from '../routes/auth.js'
 const database = new nedb({
     filename: './data/orders.db',
     autoload: true
