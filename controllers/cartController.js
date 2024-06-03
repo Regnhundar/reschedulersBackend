@@ -1,9 +1,9 @@
 import menu from "../controllers/menuController.js";
-import { threeForThePrice, shippingCost } from "../utility/promotionFunctions.js";
+import { runPromotions } from "../utility/promotionFunctions.js";
 let cart = []
 
 
-// @desc GET Hämta hem varukorgen
+// @desc GET Hämta hem varukorgen och applicerar kampanjer.
 // @route /cart
 export const getCart = async (req, res, next) => {
     try {
@@ -17,9 +17,9 @@ export const getCart = async (req, res, next) => {
 
         let totalPrice = 0
 
-        // Promotions:
-        //    handlePromotions(cart, menu)
-        cart = await threeForThePrice(cart, menu)
+        let shipping = 50;
+
+        const { cart: updatedCart, shipping: updatedShipping } = await runPromotions(cart, menu, shipping);
 
         cart.forEach(item => totalPrice += item.price);
 
@@ -27,11 +27,11 @@ export const getCart = async (req, res, next) => {
             success: true,
             status: 200,
             data: {
-                cart,
-                shipping: shippingCost(),
-                total: totalPrice + shippingCost()
+                cart: updatedCart,
+                shipping: updatedShipping,
+                total: totalPrice + updatedShipping
             }
-        })
+        });
     } catch (error) {
         next(error)
     }
