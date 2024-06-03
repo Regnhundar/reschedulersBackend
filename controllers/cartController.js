@@ -1,5 +1,5 @@
 import menu from "../controllers/menuController.js";
-import { threeForThePrice, shippingCost } from "../utility/promotionFunctions.js";
+import { runPromotions } from "../utility/promotionFunctions.js";
 let cart = []
 
 
