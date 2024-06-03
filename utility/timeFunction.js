@@ -18,6 +18,7 @@ export const setDeliveryTime = () => {
     let minutes = new Date().getMinutes();
 
     minutes += Math.floor(Math.random() * (20 - 10 + 1) + 10)
+
     if (minutes >= 60) {
         minutes -= 60
         hour += 1
@@ -25,5 +26,6 @@ export const setDeliveryTime = () => {
     if (hour > 24) {
         hour -= 24
     }
-    return `${hour}${minutes}`
+
+    return `${String(hour).padStart(2, "0")}${String(minutes).padStart(2, "0")}`
 }

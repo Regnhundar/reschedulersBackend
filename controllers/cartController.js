@@ -12,7 +12,7 @@ export const getCart = async (req, res, next) => {
                 status: 200,
                 message: 'Varukorgen är tom'
             }
-            return next(error)
+            throw (error);
         }
 
         let totalPrice = 0
@@ -50,7 +50,7 @@ export const addToCart = async (req, res, next) => {
                 status: 400,
                 message: 'Kan inte lägga in produkten i varukorg'
             }
-            return next(error)
+            throw (error);
         }
 
         cart.push(foundItem);

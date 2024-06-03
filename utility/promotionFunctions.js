@@ -20,7 +20,7 @@ const thirdItemFree = async (cart, menu) => {
     }
 }
 // Gratis frakt om du är inloggad.
-const freeUserShipping = (shipping) => {
+export const freeUserShipping = (shipping) => {
     if (global.currentUser) {
         shipping = 0
     }

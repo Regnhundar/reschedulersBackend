@@ -11,17 +11,17 @@ db.count({})
         }
     })
     .catch(err => {
-        console.error('Error initializing database:', err);
+        next(err)
     });
 
-// @desc Get About 
+// @desc GET Hämtar hem informationen som är skriven i vår about-databas.
 // @route /about
 export const getAbout = async (req, res, next) => {
     try {
         //Hämtar dokument i databasen
         const docs = await db.find({});
         // Om hämtningen lyckas, returnera dokumenten som JSON-svar.
-        res.json(docs);
+        res.status(200).json(docs);
         //Om något går fel catchas detta och skickar error
     } catch (error) {
         next(error);

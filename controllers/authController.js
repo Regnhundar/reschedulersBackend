@@ -1,9 +1,7 @@
 import { v4 } from "uuid";
 import nedb from "nedb-promises";
-import { calculateDeliveryTime } from "../utility/timeFunction.js";
 
 const database = new nedb({ filename: "./data/users.db", autoload: true });
-
 
 // @desc POST logga in användare
 // @route /auth/login
@@ -19,7 +17,7 @@ export const loginUser = async (req, res, next) => {
         } else {
             const error = new Error("Antingen användarnamn eller lösenord är fel")
             error.status = 400
-            next(error);
+            throw (error);
         }
     } catch (error) {
         next(error);
@@ -29,9 +27,16 @@ export const loginUser = async (req, res, next) => {
 
 // @desc POST logga ut användaren.
 // @route /auth/logout
-export const logoutUser = (req, res) => {
-    global.currentUser = null;
-    res.status(200).json({ message: 'Lyckad utloggning' });
+export const logoutUser = (req, res, next) => {
+    if (global.currentUser) {
+        global.currentUser = null;
+        res.status(200).json({ message: 'Lyckad utloggning' });
+    } else {
+        const error = new Error("Ingen användare inloggad!");
+        error.status = 400;
+        next(error)
+    }
+
 }
 
 // @desc POST Registrera en ny användare.
@@ -43,14 +48,14 @@ export const registerUser = async (req, res, next) => {
         const userMail = await database.findOne({ email: email });
 
         if (user) {
-            return next({
-                message: `Användarnamn upptaget. Prova ${username}1`, status: 409
-            });
+            const error = new Error(`Användarnamn upptaget. Prova ${username}1`)
+            error.status = 409
+            throw (error);
         }
         if (userMail) {
-            return next({
-                message: `Din email har redan registrerats av en användare.`, status: 409
-            });
+            const error = new Error(`Din email har redan registrerats av en användare.`)
+            error.status = 409
+            throw (error);
         }
 
         const newUser = {
@@ -75,55 +80,10 @@ export const registerUser = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
-
 }
 
-// @desc GET Hämta leveranstid för inloggad användare.
-// @route /order
-export const getOrderStatus = (req, res) => {
-    if (!global.currentUser) {
-        return res.status(401).json({ message: 'Ingen användare är inloggad' })
-    }
 
-    //Kollar om currentUser har någon aktiv order
-    const undeliveredOrder = global.currentUser.orders[0]
-    if (!undeliveredOrder) {
-        return res.status(404).json({ message: 'Ingen aktiv beställning hittades' })
-    }
 
-    //Beräknar tid för leverans
-    const approxDeliveryTime = parseInt(undeliveredOrder.approxTime);
 
-    return res.status(200).json({
-        message: calculateDeliveryTime(approxDeliveryTime),
-        order: undeliveredOrder
-    })
-}
-
-// @desc POST Hämta inloggad users beställningar 
-// @route /user/orders
-export const getUserOrders = async (req, res, next) => {
-    try {
-        let user = global.currentUser;
-        let totalSum = 0;
-
-        if (!user) {
-            return next({ message: "Du måste logga in för att se din historik", status: 401 });
-        }
-
-        const orders = user.orders;
-        orders.forEach(order => totalSum += order.totalsum);
-
-        res.status(200).send({
-            success: true,
-            status: 200,
-            orders: orders,
-            totalsumman: totalSum,
-        });
-    } catch (error) {
-        next(error)
-    }
-
-}
 
 export default database;
