@@ -22,7 +22,7 @@ app.use('/cart', cartRoute);
 app.use('/auth', authenticationRoute);
 app.use('/about', aboutRoute);
 app.use('/promotions', promotionsRoute);
-app.use('/order', orderRoute);
+app.use('/orders', orderRoute);
 
 app.listen(port, () => console.log(`Server running on ${port}`));
 
