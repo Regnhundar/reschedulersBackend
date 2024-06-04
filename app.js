@@ -12,6 +12,7 @@ const app = express();
 const port = 1337;
 
 global.currentUser = null;
+global.shipping = 50;
 
 //Middleware
 app.use(express.json());
@@ -27,5 +28,5 @@ app.use('/orders', orderRoute);
 app.listen(port, () => console.log(`Server running on ${port}`));
 
 // Middleware för felhantering:
-app.use(notFound); // URL kan inte hittas
-app.use(errorHandler); // Specifika error
+app.use(notFound); // URL kan inte hittas. Behöver ligga efter routes.
+app.use(errorHandler); // Specifika error måste vara sist av alla middleware.

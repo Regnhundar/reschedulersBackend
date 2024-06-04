@@ -3,7 +3,7 @@ import { getAbout } from '../controllers/aboutController.js'
 
 const router = Router();
 
-// GET about
+// http://localhost:1337/about
 router.get('/', getAbout);
 
 export default router;

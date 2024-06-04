@@ -4,12 +4,13 @@ import usersdb from './authController.js'
 import { freeUserShipping } from '../utility/promotionFunctions.js'
 import { setDeliveryTime, calculateDeliveryTime } from '../utility/timeFunction.js';
 
+//Skapar orders db
 const database = new nedb({
     filename: './data/orders.db',
     autoload: true
 });
 
-// @desc POST Create order from cart
+// @desc POST Skapar en order av cart
 // @route /order
 export const createOrder = async (req, res, next) => {
     try {
@@ -21,46 +22,52 @@ export const createOrder = async (req, res, next) => {
             throw (error)
         }
 
-        let user = 'guest'
+        //sätter username till gäst - kollar sedan om username är inloggad och sätter usename till användaren (sparar objektet i currentUser)
+        let username = 'guest'
         let currentUser = {}
         if (global.currentUser) {
-            user = global.currentUser.username
-            currentUser = await usersdb.findOne({ username: global.currentUser.username });
+            username = global.currentUser.username
+            currentUser = await usersdb.findOne({ username: username });
         }
 
         const order = [];
-        let shipping = freeUserShipping(50)
+        let shipping = freeUserShipping(global.shipping);
         let totalsum = 0;
 
+        //Loopar cart och flyttar varje item till order. Uppdaterar totalpris. 
         cart.forEach(item => {
             order.push(item);
             totalsum += item.price;
         })
-        cart.splice(0, cart.length)
+        //Rensar cart
+        cart.splice(0, cart.length);
 
-        const approxTime = setDeliveryTime()
+        //Kallar på importerad funktion för att sätta beräknad leveranstid
+        const approxTime = setDeliveryTime();
 
+        //Sammanställning av order
         const newOrder = {
-            user,
+            username,
             order,
             totalsum: totalsum + shipping,
             approxTime,
             shipping: shipping
         };
 
+        //Lägger in order i db + hämtar för att få _id
         await database.insert(newOrder);
         const createdOrder = await database.findOne({
-            user,
+            username,
             order,
             approxTime
         })
 
-        if (user !== "guest") {
+        //Om inte gäst - ordern läggs in i db för den inloggade användaren
+        if (username !== "guest") {
             global.currentUser.orders.unshift(createdOrder)
             currentUser.orders.unshift(createdOrder)
             usersdb.update({ id: currentUser.id }, { $set: { orders: currentUser.orders } })
         }
-
         res.status(200).send({
             success: true,
             status: 200,
@@ -85,7 +92,7 @@ export const getUserOrders = async (req, res, next) => {
             error.status = 401
             return next(error);
         }
-
+        //Plockar fram orders från aktuell användare
         const orders = user.orders;
         orders.forEach(order => totalSum += order.totalsum);
 
@@ -118,7 +125,7 @@ export const getOrderStatus = (req, res, next) => {
         return next(error);
     }
 
-    //Beräknar tid för leverans
+    //Vid aktiv order - beräknar tid för leverans
     const approxDeliveryTime = parseInt(undeliveredOrder.approxTime);
 
     return res.status(200).json({

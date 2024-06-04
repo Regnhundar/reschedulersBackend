@@ -1,4 +1,5 @@
 
+//Funktion för att bedömma om leverans skett eller inte
 export const calculateDeliveryTime = (approxDeliveryTime) => {
 
     let hour = new Date().getHours();
@@ -12,6 +13,7 @@ export const calculateDeliveryTime = (approxDeliveryTime) => {
     }
 }
 
+//Funktion för att sätta leveranstid
 export const setDeliveryTime = () => {
 
     let hour = new Date().getHours();

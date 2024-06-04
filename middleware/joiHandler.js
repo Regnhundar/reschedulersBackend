@@ -1,4 +1,4 @@
-
+// Tar emot ett schema och validerar mot vad som skickats med i req.body. Om det fastnar i valideringen skickas ett errorobjekt till errorHandler.
 const joiHandler = (schema) => {
     return (req, res, next) => {
         const { error } = schema.validate(req.body);

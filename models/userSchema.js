@@ -1,5 +1,6 @@
 import Joi from "joi";
 
+//Schema som används av joiHandler vid regestrering av användare.
 const userSchema = Joi.object({
     username: Joi.string()
         .alphanum().message("Endast bokstäver och siffror är tillåtna.")
@@ -9,7 +10,7 @@ const userSchema = Joi.object({
     password: Joi.string()
         .min(5).message("Ditt lösenord får minst vara 5 tecken långt.")
         .max(15).message("Ditt lösenord får högst vara 15 tecken långt.")
-        .pattern(new RegExp('^(?=.*[A-Z])(?=.*[0-9])')).message('Lösenorder måste innehålla minst en siffra och en stor bokstav.')
+        .pattern(new RegExp('^(?=.*[A-Ö])(?=.*[0-9])')).message('Lösenorder måste innehålla minst en siffra och en stor bokstav.')
         .required(),
     email: Joi.string()
         .email().message("Du måste ange en giltig email-adress.")
