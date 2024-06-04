@@ -27,5 +27,5 @@ app.use('/orders', orderRoute);
 app.listen(port, () => console.log(`Server running on ${port}`));
 
 // Middleware för felhantering:
-app.use(notFound); // URL kan inte hittas
-app.use(errorHandler); // Specifika error
+app.use(notFound); // URL kan inte hittas. Behöver ligga efter routes.
+app.use(errorHandler); // Specifika error måste vara sist av alla middleware.

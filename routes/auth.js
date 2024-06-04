@@ -5,8 +5,13 @@ import { registerUser, logoutUser, loginUser } from "../controllers/authControll
 
 const router = Router();
 
+// http://localhost:1337/auth/register
 router.post("/register", joiHandler(userSchema), registerUser);
+
+// http://localhost:1337/auth/login
 router.post("/login", loginUser);
+
+// http://localhost:1337/auth/logout
 router.post("/logout", logoutUser);
 
 export default router;

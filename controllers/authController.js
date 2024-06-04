@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 import nedb from "nedb-promises";
 
+//Skapa en db för users
 const database = new nedb({ filename: "./data/users.db", autoload: true });
 
 // @desc POST logga in användare
@@ -9,8 +10,10 @@ export const loginUser = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
+        //Hittar användare
         const authUser = await database.findOne({ username: username, password: password });
 
+        //Om/När vi hittar användare sätter vi den currentUser till authUser
         if (authUser) {
             global.currentUser = authUser;
             res.status(200).json({ message: `Välkommen tillbaka ${username}!` })
@@ -47,6 +50,7 @@ export const registerUser = async (req, res, next) => {
         const user = await database.findOne({ username: username });
         const userMail = await database.findOne({ email: email });
 
+        // OM användarnamnet som angetts i req.body finns i databasen så är användarnamnet redan upptaget och vi kastar ett fel.
         if (user) {
             const error = new Error(`Användarnamn upptaget. Prova ${username}1`)
             error.status = 409
@@ -58,6 +62,7 @@ export const registerUser = async (req, res, next) => {
             throw (error);
         }
 
+        //Skapar newUser och lägger till ID, orders samt summan
         const newUser = {
             id: v4().slice(0, 8),
             username: username,
@@ -67,6 +72,7 @@ export const registerUser = async (req, res, next) => {
             totalsum: 0
         }
 
+        //Lägger in newUser i db och sätter den som currentUser
         await database.insert(newUser);
         global.currentUser = newUser;
 

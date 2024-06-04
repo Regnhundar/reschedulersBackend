@@ -1,5 +1,7 @@
 import promotionsDB from "../controllers/promotionController.js";
 
+
+// Hämtar alla aktiva promotions
 const activePromotions = await promotionsDB.find({ active: true });
 
 // Promotion 3 för 2
@@ -19,6 +21,7 @@ const thirdItemFree = async (cart, menu) => {
         console.log(error);
     }
 }
+
 // Gratis frakt om du är inloggad.
 export const freeUserShipping = (shipping) => {
     if (global.currentUser) {
@@ -26,6 +29,7 @@ export const freeUserShipping = (shipping) => {
     }
     return shipping
 }
+
 // Våga vägra pengar.
 const goBankrupt = (cart, shipping) => {
     cart.forEach(item => {
@@ -34,6 +38,7 @@ const goBankrupt = (cart, shipping) => {
     shipping = 0;
     return { cart, shipping }
 }
+
 // Knyter en funktion till respektive promotions id i databasen {promotion.id : funktionsNamn}
 const promotions = {
     threeForTwo: thirdItemFree,

@@ -1,7 +1,8 @@
 import menu from "../controllers/menuController.js";
 import { runPromotions } from "../utility/promotionFunctions.js";
-let cart = []
 
+//Skapar cart
+let cart = []
 
 // @desc GET Hämta hem varukorgen och applicerar kampanjer.
 // @route /cart
@@ -15,10 +16,11 @@ export const getCart = async (req, res, next) => {
             throw (error);
         }
 
+        //Skapar totalPrice och Shipping för promotions
         let totalPrice = 0
-
         let shipping = 50;
 
+        //Variabel för användning av promotions (Skickar in cart, shipping och menu till runPromotions som skickar tillbaka dem updated)
         const { cart: updatedCart, shipping: updatedShipping } = await runPromotions(cart, menu, shipping);
 
         cart.forEach(item => totalPrice += item.price);

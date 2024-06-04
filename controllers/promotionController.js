@@ -1,8 +1,9 @@
 import nedb from "nedb-promises"
 
+//Skapar promotions db
 const database = new nedb({ filename: "./data/promotions.db", autoload: true });
 
-// @desc Get all promotions 
+// @desc GET hämtar alla promotions, även inaktiva. 
 // @route /promotions
 export const getPromotions = async (req, res, next) => {
     try {
