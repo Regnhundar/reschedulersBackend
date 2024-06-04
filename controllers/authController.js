@@ -8,6 +8,11 @@ const database = new nedb({ filename: "./data/users.db", autoload: true });
 // @route /auth/login
 export const loginUser = async (req, res, next) => {
     try {
+        if (global.currentUser) {
+            const error = new Error("Du är redan inloggad. Logga ut först.");
+            error.status = 400;
+            throw error;
+        }
         const { username, password } = req.body;
 
         //Hittar användare
@@ -46,6 +51,13 @@ export const logoutUser = (req, res, next) => {
 // @route /auth/register
 export const registerUser = async (req, res, next) => {
     try {
+
+        if (global.currentUser) {
+            const error = new Error("Du behöver logga ut innan du registrerar ny användare.");
+            error.status = 400;
+            throw error;
+        }
+
         const { username, password, email } = req.body;
         const user = await database.findOne({ username: username });
         const userMail = await database.findOne({ email: email });

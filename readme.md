@@ -1,6 +1,6 @@
 # Gruppexamination Backend med Node.js
-Gruppnamn: Reschedulers
-Medlemmar: Ida, Lisa, Kim och Magnus
+Gruppnamn: Reschedulers  
+Medlemmar: Ida, Lisa, Kim och Magnus  
 
 ## Routes:
 
