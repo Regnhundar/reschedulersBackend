@@ -31,7 +31,7 @@ export const createOrder = async (req, res, next) => {
         }
 
         const order = [];
-        let shipping = freeUserShipping(50);
+        let shipping = freeUserShipping(global.shipping);
         let totalsum = 0;
 
         //Loopar cart och flyttar varje item till order. Uppdaterar totalpris. 

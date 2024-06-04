@@ -12,6 +12,7 @@ const app = express();
 const port = 1337;
 
 global.currentUser = null;
+global.shipping = 50;
 
 //Middleware
 app.use(express.json());
